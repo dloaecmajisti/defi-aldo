@@ -1,4 +1,4 @@
-import React from "react";
+import React, {useCallback} from "react";
 import {Tweets} from "./Tweets";
 import {
     fetchTwitterMovieStarFeedsAction,
@@ -44,8 +44,8 @@ export const App = () => {
     const musicTweets = useSelector(musicStarFeeds)
     const showMovieView = useSelector(movieView);
 
-    const movieStarFeedsRefresh = () => dispatch(fetchTwitterMovieStarFeedsAction());
-    const musicStarFeedsRefresh = () => dispatch(fetchTwitterMusicStarFeedsAction());
+    const movieStarFeedsRefresh = useCallback(() => dispatch(fetchTwitterMovieStarFeedsAction()), [dispatch]);
+    const musicStarFeedsRefresh = useCallback(() => dispatch(fetchTwitterMusicStarFeedsAction()), [dispatch]);
     const setMovieView = () => dispatch(setMovieViewAction(true))
     const setMusicView = () => dispatch(setMovieViewAction(false))
     const toggleView = () => dispatch(setMovieViewAction(!showMovieView))

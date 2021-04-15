@@ -6,12 +6,12 @@ WORKDIR /opt
 COPY package*.json ./
 COPY yarn.lock .
 
-RUN yarn global add serve
 RUN yarn install --production
 
-COPY build/ html/
-COPY server/server.js .
+COPY build/ build/
+COPY server/ server/
 
-EXPOSE 5000
+EXPOSE 3000
+ENV NODE_ENV production
 
-CMD ["bash", "-c", "serve -s html"]
+CMD ["yarn", "server"]
