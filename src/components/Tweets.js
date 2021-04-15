@@ -33,7 +33,7 @@ export const Tweets = ({title, tweets, handleClick}) => {
 
     useEffect(() => {
         handleClick()
-    }, [])
+    }, [handleClick])
 
     return (
         <Paper className={classes.paper}>
