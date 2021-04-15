@@ -1,0 +1,57 @@
+include:
+    -   project: majisti-tools/pipeline/templates
+        file: single-app-deployment.yml
+    -   project: majisti-tools/pipeline/templates
+        file: images/publish-docker-image.yml
+
+image: node:15.6.0
+
+stages:
+    - prepare
+    - build
+    - qa
+    - publish
+    - deploy
+
+variables:
+    CHART_NAME: aldo-challenge
+    KUBE_NAMESPACE: majisti
+    SERVICE_NAME: aldo-challenge
+    SERVICE_SHORT_NAME: aldo-challenge
+    SERVICE_IMAGE_TAG: $CI_COMMIT_REF_SLUG
+    REACT_APP_TWITTER_BEARER_TOKEN: $TWITTER_BEARER_TOKEN
+
+.cache: &global_cache
+    policy: pull
+    key:
+        files:
+            - yarn.lock
+    paths:
+        - node_modules/
+
+build_version:
+    extends: .build_version
+
+build:
+    stage: build
+    cache:
+        <<: *global_cache
+        policy: pull-push
+    script:
+        - yarn
+        - yarn build
+    artifacts:
+        paths:
+            - build/
+
+publish_image:
+    extends: .publish_docker_image
+    variables:
+        SERVICE_DOCKER_FILE: $CI_PROJECT_DIR/Dockerfile
+        SERVICE_BUILD_CONTEXT: $CI_PROJECT_DIR
+
+deploy_prod:
+    extends: .deploy_prod
+    environment:
+        name: production
+        url: https://aldo.k8s.majisti.com
